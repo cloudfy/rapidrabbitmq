@@ -1,0 +1,2 @@
+# rapidrabbitmq
+RabbitMQ portable
