@@ -1,45 +1,49 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿
+using System.CommandLine.Builder;
+using System.CommandLine;
+using RapidRabbitMQ.Commands;
+using RapidRabbitMQ.Builder;
+using System.CommandLine.Parsing;
+using Microsoft.Extensions.DependencyInjection;
+using RapidRabbitMQ.Services.Abstracts;
+using RapidRabbitMQ.Services;
+using Microsoft.Extensions.Logging;
+using RapidRabbitMQ;
 
-/*
- * rapidrabbitmq --prepare,-r
- *               --cleanup,-c
- *               --run, -r
-*/
-
-if (Directory.Exists(Directory.GetCurrentDirectory() + "/runtime"))
+var rootCommand = new RootCommand("Use RapidRabbitMQ to run RabbitMQ without any installation. This portable file option, enable quick execution.")
 {
-    Console.WriteLine("wwwroot exists");
-}
-else
+    new PrepareCommand()
+    , new RunCommand()
+    , new CleanCommand()
+};
+
+// build and run
+var builder = new CommandLineBuilder(rootCommand)
+    .UseDefaults()
+    .UseDependencyInjection(services =>
 {
-    Console.WriteLine("wwwroot does not exist");
-    HttpClient httpClient = new ();
-    var response = await httpClient.GetAsync(@"https://raw.githubusercontent.com/cloudfy/rapidrabbitmq/main/dep/erl.bin");
-    response.EnsureSuccessStatusCode();
+    services.AddLogging(options => {
+        options.AddConsole();
+#if DEBUG
+        options.SetMinimumLevel(LogLevel.Debug);
+#else
+        options.SetMinimumLevel(LogLevel.Warning);
+#endif
+    });
+    services.AddHttpClient();
 
-    if (response.IsSuccessStatusCode)
-    {
-        Console.WriteLine("Downloading dependency Erlang...");
-        Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/runtime");
-        using (var fileStream = new FileStream(Directory.GetCurrentDirectory() + "/runtime/erl.zip", FileMode.Create))
-        {
-            await response.Content.CopyToAsync(fileStream);
-            fileStream.Position = 0;
-            System.IO.Compression.ZipFile.ExtractToDirectory(fileStream, Directory.GetCurrentDirectory() + "/runtime");
-        }
-        File.Delete(Directory.GetCurrentDirectory() + "/runtime/erl.zip");
+    services.AddSingleton<IPreperationCheckHandler, PreperationCheckHandler>();
+    services.AddSingleton<IPreperationService, PreperationService>();
+    services.AddSingleton<IRabbitMqBootstrapService, RabbitMqBootstrapService>();
+    //services.addh
+});
 
-        // change ini
-        string iniSource = Directory.GetCurrentDirectory() + "/runtime/bin/erl.ini.src";
-        string iniDestination = Directory.GetCurrentDirectory() + "/runtime/bin/erl.ini";
-        var iniContent = await File.ReadAllTextAsync(iniSource);
-        iniContent = iniContent.Replace("{{path}}", (Directory.GetCurrentDirectory() + "\\runtime").Replace("\\", "\\\\"));
-        if (File.Exists(iniDestination)) File.Delete(iniDestination);
-        await File.WriteAllTextAsync(iniDestination, iniContent);
-    }
-    else
-    {
-        Console.WriteLine("Failed to download erl.bin");
-    }
-}
+ColorConsole.WriteInformation("\nWelcome to RapidRabbitMQ v1.0");
+return await builder
+    .Build()
+    .InvokeAsync(args);
+
+//    // run
+//    // C:\dev\Repos\rapidrabbitmq\src\bin\Debug\net8.0\runtime\erl\erts-14.2.2\bin>epmd -daemon 
+//    //..then ..
+//    // C:\dev\Repos\rapidrabbitmq\src\bin\Debug\net8.0\runtime\rmq\sbin>rabbitmq-server.bat
