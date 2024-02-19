@@ -1,4 +1,5 @@
-# rapidrabbitmq
+# RapidRabbitMQ
+![image](https://github.com/cloudfy/rapidrabbitmq/assets/31371919/b15b773b-1930-4c75-b67a-39ca97a83237)
 RabbitMQ portable. Enables you to run RabbitMQ on Windows without installing Erlang. The command line downloads and configure all dependencies.
 
 ## Getting started
@@ -11,4 +12,4 @@ RabbitMQ portable. Enables you to run RabbitMQ on Windows without installing Erl
 Management portal of RabbitMQ is enabled by default. Access via https://localhost:15671. Default username and password is `guest` and `guest`.
 
 ## Copyrights
-RabbitMQ and Erlang remains on commercial license. This project is just a wrapper to make it easier to run RabbitMQ on Windows 64bit.
+[RabbitMQ](https://rabbitmq.com/) (Copyright © 2005-2023 Broadcom.) and [Erlang](https://www.erlang.org/) remains on commercial license. This project is just a wrapper to make it easier to run RabbitMQ on Windows 64bit.
