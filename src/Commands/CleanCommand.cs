@@ -31,6 +31,10 @@ internal class CleanCommand
 
             if (Directory.Exists(Directories.RuntimeDirectory))
                 Directory.Delete("runtime", true);
+            if (File.Exists(Path.Combine(Directories.DataDirectory, ".erlang.cookie")))
+            {
+                File.SetAttributes(Path.Combine(Directories.DataDirectory, ".erlang.cookie"), FileAttributes.Normal);
+            }
             if (Directory.Exists(Directories.DataDirectory))
                 Directory.Delete("data", true);
 

@@ -38,6 +38,10 @@ internal class RunCommand
             if (options.Management)
             {
                 var pluginsFile = Path.Combine(Directories.DataDirectory, "enabled_plugins");
+                if (!Directory.Exists(Directories.DataDirectory))
+                {
+                    Directory.CreateDirectory(Directories.DataDirectory);
+                }
                 if (!File.Exists(pluginsFile))
                 {
                     ColorConsole.WriteWarning("Enabling RabbitMQ management plugins...");
