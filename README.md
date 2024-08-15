@@ -9,7 +9,10 @@ RabbitMQ portable. Enables you to run RabbitMQ on Windows without installing Erl
 4. Use `rapidrabbitmq.exe clean` to clean up.
 
 ## Management portal of RabbitMQ
-Management portal of RabbitMQ is enabled by default. Access via https://localhost:15671. Default username and password is `guest` and `guest`.
+Management portal of RabbitMQ is enabled by default. Access via https://localhost:15671 or http://localhost:15672. Default username and password is `guest` and `guest`.
+
+## RabbitMQ
+localhost:5672 is default ready for RabbitMQ queues.
 
 ## Copyrights
 [RabbitMQ](https://rabbitmq.com/) (Copyright © 2005-2023 Broadcom.) and [Erlang](https://www.erlang.org/) remains on commercial license. This project is just a wrapper to make it easier to run RabbitMQ on Windows 64bit.
