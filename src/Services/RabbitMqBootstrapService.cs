@@ -100,7 +100,7 @@ public sealed class RabbitMqBootstrapService(
         _epmdProcess.StartInfo.UseShellExecute = false;
         _epmdProcess.StartInfo.CreateNoWindow = true;
         _epmdProcess.StartInfo.FileName = "cmd.exe";
-        _epmdProcess.StartInfo.Arguments = "/c \"" + Path.Combine(Directories.ErlangDirectory, "erts-15.1.2", "bin", "epmd"); // + "\" -daemon";
+        _epmdProcess.StartInfo.Arguments = "/c \"" + Path.Combine(Directories.ErlangDirectory, StaticConstants.ERLANG_BIN, "bin", "epmd"); // + "\" -daemon";
         _epmdProcess.StartInfo.RedirectStandardOutput = true;
         _epmdProcess.StartInfo.RedirectStandardError = true;
         _epmdProcess.OutputDataReceived += new DataReceivedEventHandler(process_OutputDataReceived);
