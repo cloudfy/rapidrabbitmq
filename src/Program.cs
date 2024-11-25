@@ -38,12 +38,7 @@ var builder = new CommandLineBuilder(rootCommand)
     //services.addh
 });
 
-ColorConsole.WriteInformation("\nWelcome to RapidRabbitMQ v1.0");
+ColorConsole.WriteInformation("\nWelcome to RapidRabbitMQ v1.4");
 return await builder
     .Build()
     .InvokeAsync(args);
-
-//    // run
-//    // C:\dev\Repos\rapidrabbitmq\src\bin\Debug\net8.0\runtime\erl\erts-14.2.2\bin>epmd -daemon 
-//    //..then ..
-//    // C:\dev\Repos\rapidrabbitmq\src\bin\Debug\net8.0\runtime\rmq\sbin>rabbitmq-server.bat
