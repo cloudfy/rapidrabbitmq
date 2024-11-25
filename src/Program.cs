@@ -38,7 +38,7 @@ var builder = new CommandLineBuilder(rootCommand)
     //services.addh
 });
 
-ColorConsole.WriteInformation("\nWelcome to RapidRabbitMQ v1.4");
+ColorConsole.WriteInformation("\nWelcome to RapidRabbitMQ v" + StaticConstants.VERSION);
 return await builder
     .Build()
     .InvokeAsync(args);
