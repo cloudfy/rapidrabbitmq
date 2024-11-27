@@ -25,6 +25,7 @@ public class PreperationService(
             string iniDestination = erlFolder + "/bin/erl.ini";
             var iniContent = await File.ReadAllTextAsync(iniSource);
             iniContent = iniContent.Replace("{{path}}", (Directory.GetCurrentDirectory() + "\\runtime\\erl").Replace("\\", "\\\\"));
+            iniContent = iniContent.Replace("{{version}}", StaticConstants.ERLANG_BIN);
             if (File.Exists(iniDestination)) File.Delete(iniDestination);
             await File.WriteAllTextAsync(iniDestination, iniContent);
 

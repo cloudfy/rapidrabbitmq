@@ -5,8 +5,13 @@ using RapidRabbitMQ.Services.Abstracts;
 namespace RapidRabbitMQ.Services;
 
 public sealed class RabbitMqBootstrapService(
-    ILogger<RabbitMqBootstrapService> logger) : IRabbitMqBootstrapService, IDisposable
+    ILogger<RabbitMqBootstrapService> logger) 
+    : IRabbitMqBootstrapService, IDisposable
 {
+    private Process? _epmdProcess;
+    private Process? _process;
+    private readonly ILogger<RabbitMqBootstrapService> _logger = logger;
+
     public async Task Run()
     {
         StartEpmd();
@@ -49,7 +54,11 @@ public sealed class RabbitMqBootstrapService(
         _logger.LogDebug($"SET ERLANG_HOME=\"{Directories.ErlangDirectory.Replace("\\", "\\\\")}\"");
         _logger.LogDebug($"SET RABBITMQ_BASE=\"{Directories.DataDirectory.Replace("\\", "\\\\")}\"");
         _logger.LogDebug($"SET RABBITMQ_CONFIG_FILE=\"{Directories.RabbitMqConfigFile.Replace("\\", "\\\\")}\"");
-       
+
+        string rmqExecutive = Path.Combine(
+            Directories.RabbitMqSbinDirectory, "rabbitmq-server.bat");
+        _logger.LogDebug($"Starting process {rmqExecutive}");
+
         _process = new Process();
         _process.StartInfo.EnvironmentVariables["ERLANG_HOME"] = Directories.ErlangDirectory; //+ @"\"; // Where is erlang ? 
         _process.StartInfo.EnvironmentVariables["RABBITMQ_BASE"] = Directories.DataDirectory;  // Where to put RabbitMQ logs and database
@@ -65,18 +74,31 @@ public sealed class RabbitMqBootstrapService(
         _process.StartInfo.RedirectStandardError = true;
         _process.OutputDataReceived += new DataReceivedEventHandler(process_OutputDataReceived);
         _process.ErrorDataReceived += new DataReceivedEventHandler(process_ErrorDataReceived);
+        _process.Exited += process_Exited;
         _process.StartInfo.FileName = "cmd.exe";
-        _process.StartInfo.Arguments = "/c \"" + Path.Combine(Directories.RabbitMqSbinDirectory, "rabbitmq-server.bat") + "\"";
+        _process.StartInfo.Arguments = "/c \"" + rmqExecutive + "\"";
 
         //  WriteLineToOutput(" Server started ... ", Color.White);
 
-        _process.Start();
+        try
+        {
+            _process.Start();
+        }
+        catch (Exception e)
+        {
+            e = e;
+        }
         _process.BeginOutputReadLine();
+    }
+
+    private void process_Exited(object? sender, EventArgs e)
+    {
+        _logger.LogDebug("RabbitMQ process exited.");
     }
 
     private void process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
     {
-        Console.WriteLine("ERROR] " + e.Data);
+        _logger.LogInformation("[ERROR] " + e.Data);
     }
 
     private void process_OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -87,13 +109,10 @@ public sealed class RabbitMqBootstrapService(
         }
         else 
         { 
-            Console.WriteLine(e.Data);
+            _logger.LogInformation(e.Data);
         }
     }
-    private Process _epmdProcess;
-    private Process _process;
-    private readonly ILogger<RabbitMqBootstrapService> _logger = logger;
-
+    
     private void StartEpmd()
     {
         _epmdProcess = new Process();
@@ -105,9 +124,14 @@ public sealed class RabbitMqBootstrapService(
         _epmdProcess.StartInfo.RedirectStandardError = true;
         _epmdProcess.OutputDataReceived += new DataReceivedEventHandler(process_OutputDataReceived);
         _epmdProcess.ErrorDataReceived += new DataReceivedEventHandler(process_ErrorDataReceived);
-
+        _epmdProcess.Exited += epmdProcess_Exited;
         _epmdProcess.Start();
         _epmdProcess.BeginOutputReadLine();
+    }
+
+    private void epmdProcess_Exited(object? sender, EventArgs e)
+    {
+        _logger.LogDebug("EPMD process exited.");
     }
 
     public void Dispose()

@@ -1,4 +1,4 @@
-# RapidRabbitMQ v. 1.4
+# RapidRabbitMQ v. 1.4.5
 ![image](https://github.com/cloudfy/rapidrabbitmq/assets/31371919/b15b773b-1930-4c75-b67a-39ca97a83237)
 RabbitMQ portable. Enables you to run RabbitMQ on Windows without installing Erlang. The command line downloads and configure all dependencies.
 
