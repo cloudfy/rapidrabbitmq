@@ -18,7 +18,7 @@ public class PreperationService(
         if (!Contains("erl"))
         {
             ColorConsole.WriteWarning("Setting up dependency Erlang...");
-            var erlFolder = await DownloadArtifact(@"https://raw.githubusercontent.com/cloudfy/rapidrabbitmq/main/dep/erl.bin", "erl");
+            var erlFolder = await DownloadArtifact(StaticConstants.ERL_URL, "erl");
 
             Console.WriteLine("Configuring dependency Erlang...");
             string iniSource = erlFolder + "/bin/erl.ini.src";
